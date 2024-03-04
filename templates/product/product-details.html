@@ -1,0 +1,93 @@
+{% extends 'base.html' %} 
+{% load static %} 
+{% block title %}Product details{% endblock title %} 
+{% block content %}
+<!-- Product Page Section Beign -->
+<section class="product-page">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="product-slider owl-carousel">
+          <div style="width: 80%" class="product-img">
+            <figure>
+              <img style="height: 360px" src="{{product.thumbnail}}" alt="" />
+            </figure>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="product-content">
+          <h2>{{ product.title|truncatewords:20 }}</h2>
+          <div class="pc-meta">
+            <h5>$22.90</h5>
+            <div class="rating">
+              {% comment %} <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i>
+              <i class="fa fa-star"></i> {% endcomment %} 
+              {% if product.in_stock %}
+              <div class="p-status">In stock</div>
+              {% else %}
+              <div class="p-status">Out of stock</div>
+              {% endif %}
+            </div>
+          </div>
+          <p>{{ product.desciption }}</p>
+          <ul class="tags">
+            <li>
+              <span>Category :</span> {{ product.category.title|truncatewords:20 }}
+            </li>
+          </ul>
+          {% if product.in_stock %}
+          <form action="{% url 'add-to-cart' product.id %}" method="post">
+            {% csrf_token %}
+            <button
+              style="cursor: pointer"
+              type="submit"
+              class="primary-btn pc-btn"
+            >
+              Add to cart
+            </button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Product Page Section End -->
+
+<!-- Related Product Section Begin -->
+<section class="related-product spad">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <div class="section-title">
+          <h2>Related Products</h2>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      {% for related_item in related_product %}
+      <div class="col-lg-3 col-sm-6">
+        <div class="single-product-item">
+          <figure>
+            <a href="{% url 'product-details' related_item.slug %}"
+              ><img src="{{related_item.thumbnail}}" alt=""
+            /></a>
+          </figure>
+          <div class="product-text">
+            <a href="{% url 'product-details' related_item.slug %}">
+              <h6>{{related_item.title}}</h6>
+            </a>
+            <p>{{related_item.price}}</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<!-- Related Product Section End -->
+{% endblock content %}

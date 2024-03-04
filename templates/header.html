@@ -1,0 +1,62 @@
+{% load static %}
+
+<!-- Header Section Begin -->
+<header class="header-section">
+<div class="container-fluid">
+    <div class="inner-header">
+        <div class="logo">
+            <a href="{% url 'home' %}"><img src="{% static 'img/logo.png' %}" alt=""></a>
+        </div>
+        <div class="header-right">
+            <img src="{% static 'img/icons/search.png' %}" alt="" class="search-trigger">
+            <a href="{% url "cart" %}">
+                <img src="{% static 'img/icons/bag.png' %}" alt="">
+                <span>{{cart|length}}</span>
+            </a>
+        </div>
+        <div class="user-access">
+            <a href="#">Register</a>
+            <a href="#" class="in">Sign in</a>
+        </div>
+        <nav class="main-menu mobile-menu">
+            <ul>
+                <li><a class="" href="{% url 'home' %}">Home</a></li>
+                <li><a class="" href="{% url 'product-list' %}">Products</a></li>
+                <li><a class="" href="#">Categories</a>
+                    <ul class="sub-menu">
+                        {% for category in categories %}
+                        <li><a href="{% url 'category-details' category.slug %}">{{category.title|title}}</a></li>
+                        {% endfor %}
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+</header>
+{% comment %} <!-- Header Info Begin -->
+<div class="header-info">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="header-item">
+                <img src="img/icons/delivery.png" alt="">
+                <p>Free shipping on orders over $30 in USA</p>
+            </div>
+        </div>
+        <div class="col-md-4 text-left text-lg-center">
+            <div class="header-item">
+                <img src="img/icons/voucher.png" alt="">
+                <p>20% Student Discount</p>
+            </div>
+        </div>
+        <div class="col-md-4 text-left text-xl-right">
+            <div class="header-item">
+            <img src="img/icons/sales.png" alt="">
+            <p>30% off on dresses. Use code: 30OFF</p>
+        </div>
+        </div>
+    </div>
+</div>
+</div>
+<!-- Header Info End --> {% endcomment %}
+<!-- Header End -->
