@@ -1,0 +1,226 @@
+{% extends "../base.html" %}
+{% load static %}
+{% block title %}Check Out{% endblock title %}
+
+{% block links %}
+<style>
+    #paypal-button-container{
+        display: none;
+    }
+</style>
+{% endblock links %}
+
+{% block content %}
+<!-- Page Add Section Begin -->
+<section class="page-add">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="page-breadcrumb">
+                    <h3>Checkout</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Page Add Section End -->
+
+<!-- Contact Section Begin -->
+<div class="contact-section">
+    <div id="main-content" class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div id="paypal-button-container"></div>
+                <form id="checkout-form" class="contact-form" method="POST" novalidate>
+                    {% csrf_token %}
+                    <div class="row">
+                        {% if messages %}
+                        <div class="col-lg-12 py-2">
+                            {% include "../message.html" %}
+                        </div>
+                        {% endif %}
+                        <div class="col-lg-12 py-2">
+                            <input name='first_name' type="text" placeholder="Enter first name">
+                            <small id='error_first_name' class='text-danger'></small>
+                        </div>
+                        <div class="col-lg-12 py-2">
+                            <input name='last_name' type="text" placeholder="Enter last name">
+                            <small id='error_last_name' class='text-danger'></small>
+                        </div>
+                        <div class="col-lg-12 py-2">
+                            <input name='email' type="email" placeholder="Enter email">
+                            <small id='error_email' class='text-danger'></small>
+                        </div>
+                        <div class="col-lg-12 py-2">
+                            <input name='city' type="text" placeholder="Enter city">
+                            <small id='error_city' class='text-danger'></small>
+
+                        </div>
+                        <div class="col-lg-12 py-2">
+                            <input name='zip_code' type="text" placeholder="Enter zip code">
+                            <small id='error_zip_code' class='text-danger'></small>
+
+                        </div>
+                        <div class="col-lg-12 py-2">
+                            <input name='address' type="text" placeholder="Enter address">
+                            <small id='error_address' class='text-danger'></small>
+                        </div>
+                        <div class="col-lg-12 text-left">
+                            <button type="submit">Continue to Pay</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Contact Section End --> 
+
+
+{% endblock content %}
+
+
+{% block extra_scripts %}
+
+<script src="https://www.paypal.com/sdk/js?client-id=ASmL7Bgp6s2weZ9sPJfQ01aQFzyEj_7GCpl7COW4fnjyhJxcmjH_el5FzvEwqxhX8MxBDpop0kijN0Ol&currency=USD"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+    const form = document.getElementById("checkout-form");
+    const csrfmiddlewaretoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const paypalCheckout = document.getElementById('paypal-button-container');
+    const mainContent = document.getElementById("main-content");
+    let formIsValid = false;
+    const total = '{{cart.total}}';
+
+    const validationAndCheckout = () => {
+        const url = '/checkout/';
+        fetch(url, {
+            method: "POST",
+            headers: {
+                'X-CSRFToken': csrfmiddlewaretoken
+            },
+            body: new FormData(form)
+        })
+        .then(response => {
+            return response.json();
+        })
+        .then(data => {
+            if(data.success){
+                formIsValid = true;
+                new FormData(form).forEach((value, key) => {
+                    // console.log(key, "-", value);
+                    if(key != 'csrfmiddlewaretoken'){
+                        document.getElementById(`error_${key}`).innerText = "";
+                    }
+                })
+                paypalCheckout.style.display = "block";
+                form.style.display = "none";
+            }
+            else{
+                let errors = data.errors;
+                // console.log(errors);
+                formIsValid = false;
+                new FormData(form).forEach((value, key) => {
+                    // console.log(key, "-", value);
+                    if(key != 'csrfmiddlewaretoken'){
+                        document.getElementById(`error_${key}`).innerText = "";
+                    }
+                })
+                Object.keys(errors).forEach(key => {
+                    document.getElementById(`error_${key}`).innerText = errors[key].join('');
+                })
+                console.log('invalid');
+
+            }
+        })
+        .catch(error => {
+            console.log(error);
+        })
+    }
+
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        validationAndCheckout();
+    } )
+
+
+    paypal.Buttons({
+        style: {
+            layout:  'vertical',
+            color:   'gold',
+            shape:   'pill',
+            label:   'buynow'
+        },
+    
+        // Sets up the transaction when a payment button is clicked
+        createOrder: function(data, actions) {
+          return actions.order.create({
+    
+            purchase_units: [{
+              amount: {
+                value: parseFloat(total).toFixed(2), // Can reference variables or functions. Example: `value: document.getElementById('...').value`
+              },
+    
+            }]
+            
+          });
+          
+        },
+        
+        // Finalize the transaction after payer approval
+        onApprove: function(data, actions) {
+          return actions.order.capture().then(function(orderData) {
+            // Successful capture! For dev/demo purposes:
+                console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+                var transaction = orderData.purchase_units[0].payments.captures[0];
+                const amount = parseFloat(transaction.amount.value).toFixed(2);
+                let customer = {};
+                const transactionID = transaction.id;
+                new FormData(form).forEach((value, key) => {
+                    customer[key] = value;
+                })
+                delete customer['csrfmiddlewaretoken'];
+                customer['total'] = amount;
+                customer['paypal_transaction_id'] = transactionID;
+                fetch('/save-order/', {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfmiddlewaretoken,
+                    },
+                    body: JSON.stringify(customer)
+                })
+                .then(response => {
+                    return response.json();
+                })
+                .then(data => {
+                    mainContent.innerHTML = "";
+                    Swal.fire({
+                        title: "Thank You!",
+                        text: "Your Payment has been completed.",
+                        icon: "success"
+                      })
+                      .then(result => {
+                        window.location.href = window.location.origin + '/orders/';
+                      })
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+                
+                // alert('Transaction '+ transaction.status + ': ' + transaction.id + '\n\nSee console for all available details');
+    
+            // When ready to go live, remove the alert and show a success message within this page. For example:
+            // var element = document.getElementById('paypal-button-container');
+            // element.innerHTML = '';
+            // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+            
+            // actions.redirect('http://127.0.0.1:8000/checkout/');
+          });
+        }
+      }).render('#paypal-button-container');
+</script>
+
+{% endblock extra_scripts %}

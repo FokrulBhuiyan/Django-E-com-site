@@ -6,6 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import authenticate, login, logout
+import copy
 from django.contrib.auth.views import (
     PasswordResetView,
     PasswordResetConfirmView
@@ -21,7 +22,7 @@ from .forms import (
 from .mixins import (
     LogoutRequiredMixin
 )
-
+from cart.carts import Cart
 
 
 
@@ -56,7 +57,11 @@ class Login(LogoutRequiredMixin, generic.View):
 
 class Logout(generic.View):
     def get(self, *args, **kwargs):
+        cart = Cart(self.request)
+        current_cart = copy.deepcopy(cart.cart)
+        coupon = copy.deepcopy(cart.coupon)
         logout(self.request)
+        cart.restore_after_logout(current_cart, coupon)
         return redirect('login')
 
 

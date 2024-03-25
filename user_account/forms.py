@@ -190,3 +190,4 @@ class ResetPasswordConfirmForm(forms.Form):
             self.user.save()
 
         return self.user
+    

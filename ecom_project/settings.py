@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'product',
     'user_account',
     'cart',
+    'order',
 ]
 
 MIDDLEWARE = [
@@ -135,3 +136,21 @@ AUTH_USER_MODEL = 'user_account.User'
 SESSION_COOKIE_AGE = 86400
 
 CART_ID = 'cart'
+COUPON_ID = 'coupon'
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'user_account.backends.EmailAuthenticationBackend',
+)
+
+# Email Credentials
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_USE_TLS = True
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST_USER = "fislam617@gmail.com"
+EMAIL_HOST_PASSWORD = "qmytpgpglmfehbnq"
+EMAIL_PORT = 587
+
+# Paypal Credentials
+PAYPAL_CLIENT_ID = 'ASmL7Bgp6s2weZ9sPJfQ01aQFzyEj_7GCpl7COW4fnjyhJxcmjH_el5FzvEwqxhX8MxBDpop0kijN0Ol'
+PAYPAL_SECRET_ID = 'EF9XC6pwwWqgsSDJgWxH6HoEYLskFsX2pn5FGyxf0oT5z8D1-XtJUMZLbi-PU1Kdlv_BHIMxBqI2dwy2'

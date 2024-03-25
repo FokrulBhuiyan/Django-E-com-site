@@ -5,7 +5,7 @@
 <div class="container-fluid">
     <div class="inner-header">
         <div class="logo">
-            <a href="{% url 'home' %}"><img src="{% static 'img/logo.png' %}" alt=""></a>
+            <a href="{% url 'home' %}"><img style="height: 60px;width: 100%;" src="{% static 'img/shoppe-logo-5.png' %}" alt=""></a>
         </div>
         <div class="header-right">
             <img src="{% static 'img/icons/search.png' %}" alt="" class="search-trigger">
@@ -14,20 +14,35 @@
                 <span>{{cart|length}}</span>
             </a>
         </div>
+        {% if not request.user.is_authenticated %}
         <div class="user-access">
-            <a href="#">Register</a>
-            <a href="#" class="in">Sign in</a>
+            <a href="{% url "login" %}">Register</a>
+            <a href="{% url "login" %}" class="in">Sign in</a>
         </div>
+        {% endif %}
         <nav class="main-menu mobile-menu">
             <ul>
                 <li><a class="" href="{% url 'home' %}">Home</a></li>
                 <li><a class="" href="{% url 'product-list' %}">Products</a></li>
                 <li><a class="" href="#">Categories</a>
-                    <ul class="sub-menu">
+                    <ul class="sub-menu" >
                         {% for category in categories %}
                         <li><a href="{% url 'category-details' category.slug %}">{{category.title|title}}</a></li>
                         {% endfor %}
+                    </ul>
                 </li>
+                
+                {% if request.user.is_authenticated %}
+                <li><a class="" href="#"><img src="{% static "img/icons/man.png" %}" alt="profile"></a>
+                    <ul class="sub-menu">
+                        <li><a href="{% url 'logout' %}">Logout</a></li>
+                        <li><a href="{% url 'orders' %}">Orders</a></li>
+                        <li><a href="{% url 'change_password' %}">Change Password</a></li>
+
+
+                    </ul>
+                </li>
+                {% endif %}
             </ul>
         </nav>
     </div>
