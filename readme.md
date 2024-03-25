@@ -10,7 +10,7 @@ project name: ecom_project
 ```
 python3 -m venv venv
 source venv/bin/activate
-
+```
 ### Install following dependencies
 ```
 pip install django
