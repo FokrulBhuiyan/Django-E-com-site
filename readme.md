@@ -13,7 +13,7 @@ source venv/bin/activate
 ```
 ### Install following dependencies
 ```
-pip install django
+pip install django pillow
 ```
 ### Make your migrations
 ```
