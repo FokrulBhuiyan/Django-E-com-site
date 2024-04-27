@@ -23,6 +23,7 @@ class OrderItem(models.Model):
 
 class Order(models.Model):
     STATUS = ('Recieved', 'On the way', 'Delivered')
+    PAYMENT_METHOD = ('PayPal', 'SSLcommerz')
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              related_name='orders', on_delete=models.CASCADE)
     order_items = models.ManyToManyField(OrderItem)
@@ -36,6 +37,8 @@ class Order(models.Model):
     address = models.TextField()
     total = models.DecimalField(max_digits=8, decimal_places=2)
     paid = models.BooleanField(default=True)
+    payment_method = models.CharField(max_length=150, choices=list(
+        zip(PAYMENT_METHOD, PAYMENT_METHOD)), default='PayPal')
     transaction_id = models.UUIDField()
     paypal_transaction_id = models.CharField(
         max_length=50, null=True, blank=True)

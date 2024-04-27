@@ -6,11 +6,16 @@ from django.urls import reverse_lazy
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.conf import settings
 
 from .forms import CheckoutForm
 from cart.carts import Cart, Coupon
 from product.models import Product
 from .models import Order, OrderItem
+
+from sslcommerz_python.payment import SSLCSession
+from decimal import Decimal
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
@@ -52,6 +57,7 @@ class SaveOrder(LoginRequiredMixin, generic.View):
         coupon_id = cart.coupon
         products = Product.objects.filter(id__in=list(user_cart.keys()))
         ordered_products = []
+        print(customer_info)
 
         for product in products:
             order_item = OrderItem.objects.create(
@@ -60,14 +66,18 @@ class SaveOrder(LoginRequiredMixin, generic.View):
                 quantity=user_cart[str(product.id)]['quantity']
             )
             ordered_products.append(order_item)
-
-        order = Order.objects.create(
-            user=self.request.user,
-            transaction_id=uuid.uuid4().hex,
-
-            **customer_info
-        )
-
+        if customer_info['payment_method']=='PayPal':
+            order = Order.objects.create(
+                user=self.request.user,
+                transaction_id=uuid.uuid4().hex,
+                **customer_info
+            )
+        else:
+            store_id = settings.STORE_ID
+            store_pass = settings.STORE_PASS 
+            
+            
+            
         order.order_items.add(*ordered_products)
 
         if coupon_id:

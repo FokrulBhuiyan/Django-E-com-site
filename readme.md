@@ -14,6 +14,7 @@ source venv/bin/activate
 ### Install following dependencies
 ```
 pip install django pillow
+pip install sslcommerz-python
 ```
 ### Make your migrations
 ```

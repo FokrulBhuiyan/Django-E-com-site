@@ -32,6 +32,7 @@
                         <th scope="col">Customer Email</th>
                         <th scope="col">Status</th>
                         <th scope="col">Date</th>
+                        <th scope="col">Payment Method</th>
                         <th scope="col">Details</th>
                       </tr>
                     </thead>
@@ -42,6 +43,7 @@
                         <td>{{order.email}}</td>
                         <td>{{order.status}}</td>
                         <td>{{order.created_date|date:'Y-m-d'}}</td>
+                        <td>{{order.payment_method}}</td>
                         <td>
                             <i type='button' class="btn btn-primary fa fa-eye" data-toggle="modal" data-target="#exampleModal_{{order.id}}" style="cursor: pointer;"></i>
                         </td>

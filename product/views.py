@@ -7,7 +7,6 @@ from django.core.paginator import (
     Paginator
 )
 from django.views import generic
-from cart.carts import Cart
 from .models import (
     Category,
     Product,
@@ -30,6 +29,7 @@ class Home(generic.TemplateView):
             }
         )
         return context
+    
 
 
 class ProductDetails(generic.DetailView):

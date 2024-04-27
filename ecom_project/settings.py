@@ -154,3 +154,7 @@ EMAIL_PORT = 587
 # Paypal Credentials
 PAYPAL_CLIENT_ID = 'ASmL7Bgp6s2weZ9sPJfQ01aQFzyEj_7GCpl7COW4fnjyhJxcmjH_el5FzvEwqxhX8MxBDpop0kijN0Ol'
 PAYPAL_SECRET_ID = 'EF9XC6pwwWqgsSDJgWxH6HoEYLskFsX2pn5FGyxf0oT5z8D1-XtJUMZLbi-PU1Kdlv_BHIMxBqI2dwy2'
+
+# SSLcommerz
+STORE_ID = 'shopi662aab2575838'
+STORE_PASS = 'shopi662aab2575838@ssl'
